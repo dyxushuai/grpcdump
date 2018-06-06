@@ -3,11 +3,11 @@
 [中文文档](README-zh.md)
 
 ```sh
-» sudo go run cmd/grpcdump.go -d lo0 -port 8085 -ip 127.0.0.1 -proto ./grpc_example/helloworld/helloworld/helloworld.proto
-2018/06/06 18:20:04 Starting capture on device "lo0"
-2018/06/06 18:20:04 reading in packets
+» sudo go run cmd/grpcdump/main.go -d lo0 -port 8085 -ip 127.0.0.1 -proto ./grpc_example/helloworld/helloworld/helloworld.proto
+2018/06/06 21:18:02 Starting capture on device "lo0"
+2018/06/06 21:18:02 reading in packets
 
-REQUEST > 2018-06-06T18:20:06.731710593+08:00: 127.0.0.1:53913 ---> 127.0.0.1:8085
+REQUEST(STREAM=1) > 2018-06-06T21:18:04.921128144+08:00: 127.0.0.1:56327 ---> 127.0.0.1:8085
   HEADERS:
     :method = "POST"
     :scheme = "http"
@@ -19,14 +19,14 @@ REQUEST > 2018-06-06T18:20:06.731710593+08:00: 127.0.0.1:53913 ---> 127.0.0.1:80
   BODY:
     {"name":"world","i18":"zh"}
 
-RESPONSE > 2018-06-06T18:20:06.73193703+08:00: 127.0.0.1:53913 <--- 127.0.0.1:8085
+RESPONSE(STREAM=1) > 2018-06-06T21:18:04.921691304+08:00: 127.0.0.1:56327 <--- 127.0.0.1:8085
   HEADERS:
     :status = "200"
     content-type = "application/grpc"
   BODY:
     {"message":"Hello, 你好"}
 
-RESPONSE > 2018-06-06T18:20:06.731994357+08:00: 127.0.0.1:53913 <--- 127.0.0.1:8085
+RESPONSE(STREAM=1) > 2018-06-06T21:18:04.921865543+08:00: 127.0.0.1:56327 <--- 127.0.0.1:8085
   HEADERS:
     grpc-status = "0"
     grpc-message = ""

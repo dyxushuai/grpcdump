@@ -16,6 +16,7 @@ package grpcdump
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/google/gopacket/tcpassembly"
@@ -50,11 +51,12 @@ func isGrpc(contentType string) bool {
 }
 
 type GrpcStreamFactory struct {
-	printer        *Printer
-	hostIP         string
-	hostPort       uint16
-	protoParser    *protoFileDescs
-	currentRequest *grpcParser
+	printer         *Printer
+	hostIP          string
+	hostPort        uint16
+	protoParser     *protoFileDescs
+	rw              sync.RWMutex
+	currentRequests map[uint32]*grpcParser
 }
 
 func NewGrpcStreamFactory(hostIP string, hostPort uint16, printer *Printer, protoFile string) (*GrpcStreamFactory, error) {
@@ -66,11 +68,25 @@ func NewGrpcStreamFactory(hostIP string, hostPort uint16, printer *Printer, prot
 		return nil, err
 	}
 	return &GrpcStreamFactory{
-		printer:     printer,
-		hostIP:      hostIP,
-		hostPort:    hostPort,
-		protoParser: protoParser,
+		printer:         printer,
+		hostIP:          hostIP,
+		hostPort:        hostPort,
+		protoParser:     protoParser,
+		currentRequests: map[uint32]*grpcParser{},
 	}, nil
+}
+
+func (s *GrpcStreamFactory) setCurrentRequest(streamID uint32, request *grpcParser) {
+	s.rw.Lock()
+	s.currentRequests[streamID] = request
+	s.rw.Unlock()
+}
+
+func (s *GrpcStreamFactory) getCurrentRequest(streamID uint32) (*grpcParser, bool) {
+	s.rw.RLock()
+	defer s.rw.RUnlock()
+	request, ok := s.currentRequests[streamID]
+	return request, ok
 }
 
 func (s *GrpcStreamFactory) New(net, transport gopacket.Flow) tcpassembly.Stream {
@@ -169,12 +185,16 @@ func (g *grpcParser) handleHeaders(f *http2.MetaHeadersFrame) bool {
 	g.printlnf("")
 	src, dst := g.flow()
 	if g.isRequest {
-		g.printlnf("REQUEST > %s: %s ---> %s", now, src, dst)
-		g.factory.currentRequest = g
-	} else if g.factory.currentRequest.myResponse(g) {
-		g.printlnf("RESPONSE > %s: %s <--- %s", now, dst, src)
-		g.input = g.factory.currentRequest.input
-		g.output = g.factory.currentRequest.output
+		g.printlnf("REQUEST(STREAM=%d) > %s: %s ---> %s", f.StreamID, now, src, dst)
+		g.factory.setCurrentRequest(f.StreamID, g)
+	} else {
+		if requst, ok := g.factory.getCurrentRequest(f.StreamID); ok {
+			if requst.myResponse(g) {
+				g.printlnf("RESPONSE(STREAM=%d) > %s: %s <--- %s", f.StreamID, now, dst, src)
+				g.input = requst.input
+				g.output = requst.output
+			}
+		}
 	}
 	g.printlnf("  HEADERS:")
 	for _, hf := range f.Fields {
