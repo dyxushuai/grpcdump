@@ -45,7 +45,7 @@ RESPONSE(STREAM=1) > 2018-06-06T21:18:04.921865543+08:00: 127.0.0.1:56327 <--- 1
 
 ## Requirement
 
-Build httpdump requires libpcap-dev and cgo enabled.
+Build grpcpdump requires libpcap-dev and cgo enabled.
 
 ### libpcap
 
