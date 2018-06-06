@@ -1,5 +1,20 @@
 # gRPC dump tool
 
+<!-- TOC -->
+
+- [gRPC dump tool](#grpc-dump-tool)
+  - [示例](#)
+  - [需求](#)
+  - [[tcpdump][]工具简介](#tcpdump)
+  - [`grpcdump`设计目标](#grpcdump)
+  - [`grpcdump`设计细节](#grpcdump)
+    - [[AF_PACKET][]的golang实现[gopacket][]](#af-packetgolanggopacket)
+    - [TLS/SSL解密(暂未实现)](#tls-ssl)
+    - [动态加载[protobuf][]](#protobuf)
+    - [带缓存的格式化打印(readable)](#readable)
+
+<!-- /TOC -->
+
 ## 示例
 
 ```sh
@@ -124,3 +139,4 @@ RESPONSE > 2018-06-06T18:20:06.73193703+08:00: 127.0.0.1:53913 <--- 127.0.0.1:80
 [PRI]: https://http2.github.io/http2-spec/#rfc.section.11.6
 [tls.Config]: https://godoc.org/crypto/tls#Config
 [key_log]: https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format
+[http2]: https://godoc.org/golang.org/x/net/http2
