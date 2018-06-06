@@ -1,10 +1,9 @@
-# 设计文档
+# gRPC dump tool
 
-## 实现效果
+## 示例
 
-```
+```sh
 » sudo go run cmd/grpcdump.go -d lo0 -port 8085 -ip 127.0.0.1 -proto ./grpc_example/helloworld/helloworld/helloworld.proto
-Password:
 2018/06/06 18:20:04 Starting capture on device "lo0"
 2018/06/06 18:20:04 reading in packets
 
@@ -61,26 +60,27 @@ RESPONSE > 2018-06-06T18:20:06.731994357+08:00: 127.0.0.1:53913 <--- 127.0.0.1:8
 
 使用[gopacket][]监听网卡，设置[BPF][]规则，为了能够串联请求和返回包，必须要求提供gPRC服务的IP和端口。并在头部打印流信息，如下：
 
-```
+```sh
 127.0.0.1:50422 ---> 127.0.0.1:8085
 127.0.0.1:50422 <--- 127.0.0.1:8085
 ```
 
-**http2包需要过滤掉[PRI][]/[代码](skip.go)**
+**http2包需要过滤掉[PRI][]/[代码](skip.go)** [issue](https://github.com/golang/go/issues/14141)
 
 ### TLS/SSL解密(暂未实现)
 
 [gRPC][]客户端或者服务端需要使用[tls.Config.KeyLogWriter](tls.Config)记录[key_log][], grpcdump读取[key_log][]信息解密。
 
-**值推荐在debug模式下记录[key_log][]**
+**只推荐在debug模式下记录[key_log][]**
+
 
 ### 动态加载[protobuf][]
 
 [代码](protobuf.go)
 
-指定[protobuf]()的定义文件,来实现运行时解析[protobuf]()编码的包。并打印序列化json，如下：
+指定[protobuf][]的定义文件,来实现运行时解析[protobuf][]编码的包。并打印序列化json，如下：
 
-```
+```sh
 {"name":"world","i18":"zh"}
 {"message":"Hello, 你好"}
 ```
@@ -91,7 +91,7 @@ RESPONSE > 2018-06-06T18:20:06.731994357+08:00: 127.0.0.1:53913 <--- 127.0.0.1:8
 
 输出可读性比较好的格式, 如下：
 
-```
+```sh
 REQUEST > 2018-06-06T18:20:06.731710593+08:00: 127.0.0.1:53913 ---> 127.0.0.1:8085
   HEADERS:
     :method = "POST"
