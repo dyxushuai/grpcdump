@@ -65,14 +65,15 @@ RESPONSE(STREAM=1) > 2018-06-06T21:18:04.921865543+08:00: 127.0.0.1:56327 <--- 1
 127.0.0.1:50422 <--- 127.0.0.1:8085
 ```
 
-**http2包需要过滤掉[PRI][]/[代码](skip.go)** [issue](https://github.com/golang/go/issues/14141)
+**1. http2包需要过滤掉[PRI][]/[代码](skip.go)** 相关[issue](https://github.com/golang/go/issues/14141)
+
+**2. 多路复用情况下需要根据strem id隔离数据包**
 
 ### TLS/SSL解密(暂未实现)
 
 [gRPC][]客户端或者服务端需要使用[tls.Config.KeyLogWriter](tls.Config)记录[key_log][], grpcdump读取[key_log][]信息解密。
 
 **只推荐在debug模式下记录[key_log][]**
-
 
 ### 动态加载[protobuf][]
 
