@@ -60,4 +60,5 @@ func (p *Printer) process() {
 // Close the printer
 func (p *Printer) Close() {
 	close(p.buffer)
+	p.output.Close()
 }
