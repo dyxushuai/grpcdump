@@ -59,15 +59,18 @@ func (p *protoFileDescs) findMehodSignature(path string) (*desc.MessageDescripto
 		return nil, nil, fmt.Errorf("error path format: %s", path)
 	}
 	for _, desc := range p.descs {
+		// FindService parameter needs package.servcie
+		// e.g. helloworld.Greeter
 		srvDesc := desc.FindService(strs[1])
 		if srvDesc == nil {
-			return nil, nil, fmt.Errorf("service name not found: %s", strs[1])
+			// maybe in other files
+			continue
 		}
 		mtdDesc := srvDesc.FindMethodByName(strs[2])
 		if mtdDesc == nil {
-			return nil, nil, fmt.Errorf("method name not found: %s", strs[2])
+			return nil, nil, fmt.Errorf("method: %s not found in file: %s", strs[2], desc.GetName())
 		}
 		return mtdDesc.GetInputType(), mtdDesc.GetOutputType(), nil
 	}
-	return nil, nil, fmt.Errorf("message not found: %s", path)
+	return nil, nil, fmt.Errorf("grpc path: %s not found", path)
 }
