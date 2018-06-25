@@ -58,7 +58,7 @@ func (p *Printer) process() {
 }
 
 // Close the printer
-func (p *Printer) Close() {
+func (p *Printer) Close() error {
 	close(p.buffer)
-	p.output.Close()
+	return p.output.Close()
 }
