@@ -28,13 +28,17 @@ var device = flag.String("d", "eth0", "Interface to get packets from")
 var logAllPackets = flag.Bool("v", false, "Logs every packet in great detail")
 var filterIP = flag.String("ip", "", "Filter by ip, if either source or target ip is matched, the packet will be processed")
 var filterPort = flag.Uint("port", 0, "Filter by port, if either source or target port is matched, the packet will be processed.")
-var protoFile = flag.String("proto", "", "Protobuf spec file")
 
 func main() {
+	var protoFile grpcdump.ArrayFlags
+	var protoPath grpcdump.ArrayFlags
+	flag.Var(&protoPath, "proto_path", "Specify the directory in which to search for imports")
+	flag.Var(&protoFile, "proto", "Protobuf spec file")
 	flag.Parse()
 	log.Printf("Starting capture on device %q", *device)
 	printer := grpcdump.NewStdoutPrinter()
-	sf, err := grpcdump.NewGrpcStreamFactory(*filterIP, uint16(*filterPort), printer, *protoFile)
+	sf, err := grpcdump.NewGrpcStreamFactory(*filterIP, uint16(*filterPort), printer, protoFile.ParseDir(".proto"), protoPath)
+	//sf, err := grpcdump.NewGrpcStreamFactory(*filterIP, uint16(*filterPort), printer, protoFile, protoPath)
 	if err != nil {
 		log.Fatal(err)
 	}
