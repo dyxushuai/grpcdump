@@ -59,11 +59,11 @@ type GrpcStreamFactory struct {
 	currentRequests map[uint32]*grpcParser
 }
 
-func NewGrpcStreamFactory(hostIP string, hostPort uint16, printer *Printer, protoFile string) (*GrpcStreamFactory, error) {
+func NewGrpcStreamFactory(hostIP string, hostPort uint16, printer *Printer, protoFiles []string, importPaths []string) (*GrpcStreamFactory, error) {
 	if hostIP == "" || hostPort == 0 {
 		return nil, fmt.Errorf("miss hostIP: %s or hostPort: %d", hostIP, hostPort)
 	}
-	protoParser, err := protoParse(nil, protoFile)
+	protoParser, err := protoParse(importPaths, protoFiles...)
 	if err != nil {
 		return nil, err
 	}
